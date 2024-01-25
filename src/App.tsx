@@ -208,7 +208,7 @@ function HtmlAnnotation({ anchor, text }: IHtmlAnnotationProps) {
 interface ICabinetProps {
   position: [number, number, number];
   cabinet: [number, number, number];
-  text: string;
+  text?: string;
 }
 
 const Cabinet: React.FC<ICabinetProps> = ({ position, cabinet, text }) => {
@@ -266,7 +266,7 @@ const Cabinet: React.FC<ICabinetProps> = ({ position, cabinet, text }) => {
 
       {/* Top */}
       <Box args={[width, depth, width]} position={[0, height, 0]}>
-        <HtmlAnnotation anchor={[0, height * 13, 0]} text={text} />
+        <HtmlAnnotation anchor={[0, height * 13, 0]} text={text || ""} />
         <meshBasicMaterial
           attach="material"
           color={color2}
@@ -338,10 +338,7 @@ const Cabinet: React.FC<ICabinetProps> = ({ position, cabinet, text }) => {
   );
 };
 
-const CabinetSwitch: React.FC<ICabinetProps> = ({
-  position,
-  cabinet,
-}) => {
+const CabinetSwitch: React.FC<ICabinetProps> = ({ position, cabinet }) => {
   const depth = cabinet[0];
   const height = cabinet[1];
   const width = cabinet[2];
@@ -396,8 +393,6 @@ const CabinetSwitch: React.FC<ICabinetProps> = ({
           opacity={opacity}
         />
       </Box>
-
-      {/* should add front and back box with transparent material */}
       {/* front */}
       <Box args={[width, height, depth]} position={[0, height / 2, width / 2]}>
         <meshStandardMaterial map={frontTexture} />
@@ -435,7 +430,7 @@ const App: React.FC = () => {
       }}
     >
       <Canvas>
-        <PerspectiveCamera ref={camera} makeDefault position={[10, 10, 0]} />
+        <PerspectiveCamera ref={camera} makeDefault position={[0, 10, 0]} />
         <OrbitControls
           ref={controls}
           target={[0, 1, 0]}
@@ -477,28 +472,16 @@ const App: React.FC = () => {
           <Cabinet position={[-6.6, 0, 0]} cabinet={[0.01, 5, 2]} text="AD" />
 
           {/* <NetworkSwitch /> */}
-          <CabinetSwitch
-            position={[-6.6, 2, 0]}
-            cabinet={[0.01, 0.2, 1.8]}
-            text=" "
-          />
-          <CabinetSwitch
-            position={[-6.6, 2.3, 0]}
-            cabinet={[0.01, 0.2, 1.8]}
-            text=" "
-          />
-          <CabinetSwitch
-            position={[-6.6, 2.6, 0]}
-            cabinet={[0.01, 0.2, 1.8]}
-            text=" "
-          />
-          <CabinetSwitch
-            position={[-6.6, 2.9, 0]}
-            cabinet={[0.01, 0.2, 1.8]}
-            text=" "
-          />
+          <CabinetSwitch position={[-6.6, 2, 0]} cabinet={[0.01, 0.2, 1.8]} />
+          <CabinetSwitch position={[-6.6, 2.3, 0]} cabinet={[0.01, 0.2, 1.8]} />
+          <CabinetSwitch position={[-6.6, 2.6, 0]} cabinet={[0.01, 0.2, 1.8]} />
+          <CabinetSwitch position={[-6.6, 2.9, 0]} cabinet={[0.01, 0.2, 1.8]} />
+
+          <CabinetSwitch position={[-4.4, 4, 0]} cabinet={[0.01, 0.2, 1.8]} />
+          <CabinetSwitch position={[-4.4, 3.7, 0]} cabinet={[0.01, 0.2, 1.8]} />
         </group>
 
+        {/* <Box args={[1, 1, 1]} position={[4, 0, 0]}/> */}
         <Tween />
       </Canvas>
     </div>
