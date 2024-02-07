@@ -1,7 +1,7 @@
 import { OrbitControls, PerspectiveCamera, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import TWEEN from "@tweenjs/tween.js";
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useRef } from "react";
 import {
   PerspectiveCamera as PerspectiveCameraType,
   TextureLoader,
@@ -145,7 +145,7 @@ const App: React.FC = () => {
 export default App;
 
 const Light = () => {
-  const pointLight = useRef();
+  // const pointLight = useRef();
 
   // useHelper(spotLight, SpotLightHelper, "teal");
   // useHelper(pointLight, PointLightHelper, 0.5, "hotpink");
@@ -153,7 +153,7 @@ const Light = () => {
   return (
     <>
       <pointLight
-        ref={pointLight}
+        // ref={pointLight}
         color="blue"
         position={[1, 3, -0.5]}
         intensity={5}
@@ -165,7 +165,7 @@ const Light = () => {
 const Model = () => {
   const modelRef = useRef();
   const gltf = useLoader(GLTFLoader, "/diva_24_32.glb");
-  const [defaultMaterial, setDefaultMaterial] = useState(null);
+  // const [defaultMaterial, setDefaultMaterial] = useState(null);
 
   const rotationInDegrees = [0, -90, 0];
   const rotationInRadians = rotationInDegrees.map(
