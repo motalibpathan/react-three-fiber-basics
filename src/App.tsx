@@ -11,8 +11,10 @@ import { GLTFLoader } from "three/examples/jsm/Addons.js";
 import "./App.css";
 
 import * as THREE from "three";
-import { Rack } from "./Rack";
+import { Cuboid, Rack } from "./Rack";
 import { Switch } from "./components/Switch";
+
+const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 interface ICube {
   position: [number, number, number];
@@ -55,6 +57,11 @@ export const Floor = () => {
 const App: React.FC = () => {
   const camera = useRef<PerspectiveCameraType | null>(null!);
   const controls = useRef<OrbitControlsImpl | null>(null!);
+
+  const rotationInDegrees = [0, -90, 0];
+  const rotationForAct = rotationInDegrees.map(
+    (degree) => (degree * Math.PI) / 180
+  );
 
   return (
     <div
@@ -103,20 +110,110 @@ const App: React.FC = () => {
           />
         ))} */}
 
-            <Rack position={[0, 0, 0]} text="AA" type="server" />
-            <Rack position={[2, 0, 0]} text="AB" type="switch" />
+            {/* <Rack position={[2, 0, 0]} text="AA" type="switch" />
+            <Rack position={[0, 0, 0]} text="AB" type="server" />
             <Rack position={[-2.2, 0, 0]} text="AC" type="server" />
             <Rack position={[-4.4, 0, 0]} text="AD" type="server" />
             <Rack position={[-6.6, 0, 0]} text="AE" type="server" />
+            <Rack position={[-8.2, 0, 0]} text="AC" type="server" />
+            <Rack position={[-10.4, 0, 0]} text="AD" type="server" />
+            <Rack position={[-12.6, 0, 0]} text="AE" type="server" /> */}
 
-            <Switch position={[2.75, 2, -0.75]} size={[0.01, 0.2, 1.3]} />
+            {/* <Rack position={[2, 0, 0]} text="AA" type="switch" /> */}
+            {/* <Switch position={[2.75, 2, -0.75]} size={[0.01, 0.2, 1.3]} /> */}
+
+            <group position={[-20, 0, 0]}>
+              {[...new Array(16)].map((_, index) => (
+                <Rack
+                  key={index}
+                  position={[index * 2, 0, 0]}
+                  text={`A${alphabets[index]}`}
+                  type="server"
+                />
+              ))}
+            </group>
+
+            <group position={[-20, 0, 8]}>
+              {[...new Array(14)].map((_, index) => (
+                <Rack
+                  key={index}
+                  position={[index * 2, 0, 0]}
+                  text={`B${alphabets[index]}`}
+                  type="server"
+                />
+              ))}
+            </group>
+
             <Switch position={[1, 2.3, -1]} size={[0.01, 0.2, 1.8]} />
             <Switch position={[1, 2.6, -1]} size={[0.01, 0.2, 1.8]} />
             <Switch position={[1, 2.9, -1]} size={[0.01, 0.2, 1.8]} />
-
             <Switch position={[1, 4, -1]} size={[0.01, 0.2, 1.8]} />
             <Switch position={[1, 3.7, -1]} size={[0.01, 0.2, 1.8]} />
-            <Model />
+
+            {/* acs */}
+            <group position={[-16, 0, 16]}>
+              {[...new Array(3)].map((_, index) => (
+                <Cuboid
+                  key={index}
+                  position={[index * 12, 0, 0]}
+                  text={`AC ${index + 1}`}
+                  type="server"
+                  size={[2, 6, 9]}
+                />
+              ))}
+            </group>
+
+            <group position={[-24, 0, 10]} rotation={getRotationValue(90)}>
+              {[...new Array(2)].map((_, index) => (
+                <Cuboid
+                  key={index}
+                  position={[index * 16, 0, 0]}
+                  text={`AC ${index + 3 + 1}`}
+                  type="server"
+                  size={[2, 6, 9]}
+                />
+              ))}
+            </group>
+
+            <group position={[24, 0, 10]} rotation={getRotationValue(90)}>
+              {[...new Array(2)].map((_, index) => (
+                <Cuboid
+                  key={index}
+                  position={[index * 16, 0, 0]}
+                  text={`AC ${index + 3 + 2 + 1}`}
+                  type="server"
+                  size={[2, 6, 9]}
+                />
+              ))}
+            </group>
+
+            {/* ups */}
+            <group position={[-16, 0, 24]}>
+              {[...new Array(3)].map((_, index) => (
+                <Cuboid
+                  key={index}
+                  position={[index * 3.05, 0, 0]}
+                  text={`UPS-${alphabets[index]}`}
+                  type="server"
+                  size={[2, 5, 3]}
+                />
+              ))}
+            </group>
+
+            {/* ups */}
+            <group position={[10, 0, 24]}>
+              {[...new Array(3)].map((_, index) => (
+                <Cuboid
+                  key={index}
+                  position={[index * 3.5, 0, 0]}
+                  text={`UPS-${alphabets[index + 3]}`}
+                  type="server"
+                  size={[2, 5, 3]}
+                />
+              ))}
+            </group>
+
+            {/* <Model /> */}
           </group>
 
           {/* <Line
@@ -143,6 +240,14 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+const getRotationValue = (deg: number) => {
+  const rotationInDegrees = [0, deg, 0];
+  const rotationInRadians = rotationInDegrees.map(
+    (degree) => (degree * Math.PI) / 180
+  );
+  return rotationInRadians;
+};
 
 const Light = () => {
   // const pointLight = useRef();
