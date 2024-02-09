@@ -58,11 +58,6 @@ const App: React.FC = () => {
   const camera = useRef<PerspectiveCameraType | null>(null!);
   const controls = useRef<OrbitControlsImpl | null>(null!);
 
-  const rotationInDegrees = [0, -90, 0];
-  const rotationForAct = rotationInDegrees.map(
-    (degree) => (degree * Math.PI) / 180
-  );
-
   return (
     <div
       style={{
@@ -163,7 +158,7 @@ const App: React.FC = () => {
               ))}
             </group>
 
-            <group position={[-24, 0, 10]} rotation={getRotationValue(90)}>
+            <group position={[-24, 0, 10]} rotation={[0, Math.PI / 2, 0]}>
               {[...new Array(2)].map((_, index) => (
                 <Cuboid
                   key={index}
@@ -175,7 +170,7 @@ const App: React.FC = () => {
               ))}
             </group>
 
-            <group position={[24, 0, 10]} rotation={getRotationValue(90)}>
+            <group position={[24, 0, 10]} rotation={[0, Math.PI / 2, 0]}>
               {[...new Array(2)].map((_, index) => (
                 <Cuboid
                   key={index}
@@ -241,14 +236,6 @@ const App: React.FC = () => {
 
 export default App;
 
-const getRotationValue = (deg: number) => {
-  const rotationInDegrees = [0, deg, 0];
-  const rotationInRadians = rotationInDegrees.map(
-    (degree) => (degree * Math.PI) / 180
-  );
-  return rotationInRadians;
-};
-
 const Light = () => {
   // const pointLight = useRef();
 
@@ -267,7 +254,7 @@ const Light = () => {
   );
 };
 
-const Model = () => {
+export const Model = () => {
   const modelRef = useRef();
   const gltf = useLoader(GLTFLoader, "/diva_24_32.glb");
   // const [defaultMaterial, setDefaultMaterial] = useState(null);
