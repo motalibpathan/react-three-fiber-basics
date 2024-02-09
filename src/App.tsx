@@ -324,7 +324,7 @@ const Model = () => {
   );
 };
 
-useGLTF.preload("/diva_24_32.glb");
+// useGLTF.preload("/diva_24_32.glb");
 
 // const CircularDollyAnimation = ({ camera }) => {
 //   useEffect(() => {
