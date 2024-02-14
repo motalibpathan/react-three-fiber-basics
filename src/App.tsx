@@ -1,8 +1,14 @@
-import { OrbitControls, PerspectiveCamera, useGLTF } from "@react-three/drei";
+import {
+  OrbitControls,
+  OrthographicCamera,
+  PerspectiveCamera,
+  useGLTF,
+} from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import TWEEN from "@tweenjs/tween.js";
-import { Suspense, useRef } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import {
+  OrthographicCamera as OrthographicCameraType,
   PerspectiveCamera as PerspectiveCameraType,
   TextureLoader,
 } from "three";
@@ -56,7 +62,54 @@ export const Floor = () => {
 
 const App: React.FC = () => {
   const camera = useRef<PerspectiveCameraType | null>(null!);
+  const orthogonalRef = useRef<OrthographicCameraType | null>(null!);
   const controls = useRef<OrbitControlsImpl | null>(null!);
+
+  // return (
+  //   <>
+  //     <div
+  //       style={{
+  //         height: "100vh",
+  //         width: "100vw",
+  //       }}
+  //     >
+  //       <Canvas>
+  //         <OrthographicCamera
+  //           ref={camera}
+  //           makeDefault
+  //           position={[0, Math.PI / 2, 0]}
+  //           zoom={20}
+  //         />
+  //         <OrbitControls
+  //           ref={controls}
+  //           target={[0, 1, 0]}
+  //           maxPolarAngle={Math.PI / 2}
+  //         />
+  //         <ambientLight intensity={1} />
+  //         <gridHelper args={[50, 50, "black"]} />
+  //         <Box args={[3, 3, 3]} position={[0, 0, 0]} />
+  //         <Box args={[3, 3, 3]} position={[4, 0, 0]}>
+  //           <meshStandardMaterial color="red" />
+  //         </Box>
+  //         <Box args={[3, 3, 3]} position={[8, 0, 0]}>
+  //           <meshStandardMaterial color="green" />
+  //         </Box>
+  //         <Box args={[3, 3, 3]} position={[-4, 0, 0]}>
+  //           <meshStandardMaterial color="blue" />
+  //         </Box>
+  //         <Box args={[3, 3, 3]} position={[-8, 0, 0]}>
+  //           <meshStandardMaterial color="orange" />
+  //         </Box>
+  //       </Canvas>
+  //     </div>
+  //   </>
+  // );
+
+  const [ortho, set] = useState(false);
+  useEffect(() => {
+    // const interval = setInterval(() => set((state) => !state), 1000);
+    // return () => clearInterval(interval);
+  }, []);
 
   return (
     <div
@@ -65,9 +118,22 @@ const App: React.FC = () => {
         width: "100vw",
       }}
     >
+      <button onClick={() => set((p) => !p)}>
+        Switch To {ortho ? "3D" : "2D"}
+      </button>
       <Suspense fallback={<h1>Loading</h1>}>
         <Canvas>
-          <PerspectiveCamera ref={camera} makeDefault position={[5, 10, 25]} />
+          <PerspectiveCamera
+            ref={camera}
+            makeDefault={!ortho}
+            position={[5, 25, 50]}
+          />
+          <OrthographicCamera
+            ref={orthogonalRef}
+            makeDefault={ortho}
+            position={[0, Math.PI / 2, 0]}
+            zoom={14}
+          />
           <OrbitControls
             ref={controls}
             target={[0, 1, 0]}

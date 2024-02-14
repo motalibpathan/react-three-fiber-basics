@@ -237,6 +237,17 @@ export const Cuboid: React.FC<IRackProps> = ({ position, text, size }) => {
         />
       </Box>
 
+      {/* Bottom */}
+      <Box args={[width, 0.01, depth]} position={[width / 2, 0, 0]}>
+        <meshBasicMaterial
+          attach="material"
+          color={color2}
+          transparent
+          opacity={opacity}
+          side={2}
+        />
+      </Box>
+
       {/* should add front and back box with transparent material */}
       {/* front  */}
       <Box args={[width, height, depth]} position={[width / 2, height / 2, 0]}>
