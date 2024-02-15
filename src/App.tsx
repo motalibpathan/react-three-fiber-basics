@@ -1,14 +1,8 @@
-import {
-  OrbitControls,
-  OrthographicCamera,
-  PerspectiveCamera,
-  useGLTF,
-} from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import TWEEN from "@tweenjs/tween.js";
 import { Suspense, useEffect, useRef, useState } from "react";
 import {
-  OrthographicCamera as OrthographicCameraType,
   PerspectiveCamera as PerspectiveCameraType,
   TextureLoader,
 } from "three";
@@ -62,109 +56,80 @@ export const Floor = () => {
 
 const App: React.FC = () => {
   const camera = useRef<PerspectiveCameraType | null>(null!);
-  const orthogonalRef = useRef<OrthographicCameraType | null>(null!);
   const controls = useRef<OrbitControlsImpl | null>(null!);
 
-  // return (
-  //   <>
-  //     <div
-  //       style={{
-  //         height: "100vh",
-  //         width: "100vw",
-  //       }}
-  //     >
-  //       <Canvas>
-  //         <OrthographicCamera
-  //           ref={camera}
-  //           makeDefault
-  //           position={[0, Math.PI / 2, 0]}
-  //           zoom={20}
-  //         />
-  //         <OrbitControls
-  //           ref={controls}
-  //           target={[0, 1, 0]}
-  //           maxPolarAngle={Math.PI / 2}
-  //         />
-  //         <ambientLight intensity={1} />
-  //         <gridHelper args={[50, 50, "black"]} />
-  //         <Box args={[3, 3, 3]} position={[0, 0, 0]} />
-  //         <Box args={[3, 3, 3]} position={[4, 0, 0]}>
-  //           <meshStandardMaterial color="red" />
-  //         </Box>
-  //         <Box args={[3, 3, 3]} position={[8, 0, 0]}>
-  //           <meshStandardMaterial color="green" />
-  //         </Box>
-  //         <Box args={[3, 3, 3]} position={[-4, 0, 0]}>
-  //           <meshStandardMaterial color="blue" />
-  //         </Box>
-  //         <Box args={[3, 3, 3]} position={[-8, 0, 0]}>
-  //           <meshStandardMaterial color="orange" />
-  //         </Box>
-  //       </Canvas>
-  //     </div>
-  //   </>
-  // );
+  const [dimension, setDimension] = useState<"2d" | "3d">("3d");
+  const [isolate, setIsolate] = useState(false);
+  const groupRef = useRef<THREE.Group>(null);
+  const changeDimension = () => {
+    setDimension((p) => {
+      setIsolate(p === "2d" ? false : true);
+      return p === "2d" ? "3d" : "2d";
+    });
+  };
 
-  const [ortho, set] = useState(false);
   useEffect(() => {
-    // const interval = setInterval(() => set((state) => !state), 1000);
-    // return () => clearInterval(interval);
-  }, []);
+    if (groupRef.current === null) return;
 
-  const changeCamera = async () => {
-    if (!camera.current) return;
-
-    if (ortho) {
-      set((p) => !p);
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(true);
-        }, 600);
-      });
-      new TWEEN.Tween(camera.current?.position)
-        .to(
-          {
-            x: 5,
-            y: 25,
-            z: 50,
-          },
-          1000
-        )
-        .easing(TWEEN.Easing.Cubic.Out)
+    if (isolate) {
+      new TWEEN.Tween(groupRef.current?.scale)
+        .to({ x: 1, y: 0.01, z: 1 }, 1000)
         .start();
-
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(true);
-        }, 600);
-      });
     } else {
-      new TWEEN.Tween(camera.current?.position)
+      new TWEEN.Tween(groupRef.current?.scale)
+        .to({ x: 1, y: 1, z: 1 }, 1000)
+        .start();
+    }
+  }, [isolate]);
+
+  useEffect(() => {
+    const switchBetweenDimension = async () => {
+      if (camera.current === null) return;
+      if (controls.current === null) return;
+
+      new TWEEN.Tween(controls.current!.target)
         .to(
           {
             x: 0,
-            y: 60,
+            y: 1,
             z: 0,
           },
           1000
         )
         .easing(TWEEN.Easing.Cubic.Out)
         .start();
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(true);
-        }, 600);
-      });
-      set((p) => !p);
-    }
 
-    // camera.current?.position.set(0, Math.PI / 2, 0);
-    // camera.current?.zoom=(14);
-    // if (ortho) {
-    // } else {
-    //   camera.current?.position.set(5, 25, 50);
-    // }
-  };
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      if (dimension === "2d") {
+        new TWEEN.Tween(camera.current?.position)
+          .to(
+            {
+              x: 0,
+              y: 60,
+              z: 0,
+            },
+            1000
+          )
+          .easing(TWEEN.Easing.Cubic.Out)
+          .start();
+      } else {
+        new TWEEN.Tween(camera.current?.position)
+          .to(
+            {
+              x: 5,
+              y: 25,
+              z: 50,
+            },
+            1000
+          )
+          .easing(TWEEN.Easing.Cubic.Out)
+          .start();
+      }
+    };
+
+    switchBetweenDimension();
+  }, [dimension]);
 
   return (
     <div
@@ -173,26 +138,32 @@ const App: React.FC = () => {
         width: "100vw",
       }}
     >
-      <button onClick={changeCamera}>Switch To {ortho ? "3D" : "2D"}</button>
+      <button onClick={changeDimension}>
+        Change to {dimension === "2d" ? "3d" : "2d"}
+      </button>
+      <button onClick={() => setIsolate((p) => !p)}>Isolate</button>
       <Suspense fallback={<h1>Loading</h1>}>
         <Canvas>
           <PerspectiveCamera
             ref={camera}
-            makeDefault={!ortho}
+            makeDefault={true}
             position={[5, 25, 50]}
           />
+
+          {/* <CuboidIsolated
+            position={[12, 0, -5]}
+            text={`AC 100`}
+            type="server"
+            size={[2, 6, 9]}
+            dimension={dimension}
+          /> */}
+          {/* <CameraHelper camera={orthogonalRef} />
           <OrthographicCamera
             ref={orthogonalRef}
             makeDefault={ortho}
-            // left={-200} // Adjust left boundary of view frustum
-            // right={200} // Adjust right boundary of view frustum
-            // top={200} // Adjust top boundary of view frustum
-            // bottom={-200} // Adjust bottom boundary of view frustum
-            // near={0.1} // Adjust near plane
-            // far={10000} // Adjust far plane
             position={[0, Math.PI / 2, 0]}
-            zoom={14}
-          />
+            zoom={20}
+          /> */}
           <OrbitControls
             ref={controls}
             target={[0, 1, 0]}
@@ -218,30 +189,8 @@ const App: React.FC = () => {
                 .easing(TWEEN.Easing.Cubic.Out)
                 .start();
             }}
+            ref={groupRef}
           >
-            {/* <MoonMesh controls={controls} camera={camera} />
-        <EarthMesh controls={controls} camera={camera} />
-
-        {cubes.map((cube, index) => (
-          <Cube
-            key={index}
-            position={cube.position}
-            onClick={() => handleCubeClick(index)}
-          />
-        ))} */}
-
-            {/* <Rack position={[2, 0, 0]} text="AA" type="switch" />
-            <Rack position={[0, 0, 0]} text="AB" type="server" />
-            <Rack position={[-2.2, 0, 0]} text="AC" type="server" />
-            <Rack position={[-4.4, 0, 0]} text="AD" type="server" />
-            <Rack position={[-6.6, 0, 0]} text="AE" type="server" />
-            <Rack position={[-8.2, 0, 0]} text="AC" type="server" />
-            <Rack position={[-10.4, 0, 0]} text="AD" type="server" />
-            <Rack position={[-12.6, 0, 0]} text="AE" type="server" /> */}
-
-            {/* <Rack position={[2, 0, 0]} text="AA" type="switch" /> */}
-            {/* <Switch position={[2.75, 2, -0.75]} size={[0.01, 0.2, 1.3]} /> */}
-
             <group position={[-20, 0, 0]}>
               {[...new Array(16)].map((_, index) => (
                 <group key={index} position={[index * 2, 0, 0]}>
@@ -250,16 +199,10 @@ const App: React.FC = () => {
                     text={`A${alphabets[index]}`}
                     type="server"
                   />
-                  {[
-                    ...new Array(parseInt((Math.random() * 10).toString())),
-                  ].map((_, ind) => (
+                  {[...new Array(3)].map((_, ind) => (
                     <Switch
                       key={ind}
-                      position={[
-                        1,
-                        parseInt((Math.random() * 10).toString()) * 0.3,
-                        -1,
-                      ]}
+                      position={[1, ind * 0.3, -1]}
                       size={[0.01, 0.2, 1.8]}
                     />
                   ))}
@@ -283,12 +226,6 @@ const App: React.FC = () => {
                 />
               ))}
             </group>
-
-            {/* <Switch position={[1, 2.3, -1]} size={[0.01, 0.2, 1.8]} />
-            <Switch position={[1, 2.6, -1]} size={[0.01, 0.2, 1.8]} />
-            <Switch position={[1, 2.9, -1]} size={[0.01, 0.2, 1.8]} />
-            <Switch position={[1, 4, -1]} size={[0.01, 0.2, 1.8]} />
-            <Switch position={[1, 3.7, -1]} size={[0.01, 0.2, 1.8]} /> */}
 
             {/* acs */}
             <group position={[-16, 0, 16]}>
@@ -323,7 +260,7 @@ const App: React.FC = () => {
                   text={`AC ${index + 3 + 2 + 1}`}
                   type="server"
                   size={[2, 6, 9]}
-                  dimension={ortho ? "2d" : "3d"}
+                  // dimension={false ? "2d" : "3d"}
                 />
               ))}
             </group>
@@ -337,7 +274,6 @@ const App: React.FC = () => {
                   text={`UPS-${alphabets[index]}`}
                   type="server"
                   size={[2, 5, 3]}
-                  dimension={ortho ? "2d" : "3d"}
                 />
               ))}
             </group>
