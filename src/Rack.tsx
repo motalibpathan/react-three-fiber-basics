@@ -1,6 +1,6 @@
 import { Box } from "@react-three/drei";
 import { useLoader } from "@react-three/fiber";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TextureLoader, Vector3Tuple } from "three";
 import { HtmlAnnotation } from "./HtmlAnnotation";
 
@@ -14,6 +14,7 @@ interface IRackProps {
     color2: string;
     opacity: number;
   };
+  dimension?: "2d" | "3d";
 }
 
 export const Rack: React.FC<IRackProps> = ({ position, text, type, size }) => {
@@ -171,11 +172,18 @@ export const Rack: React.FC<IRackProps> = ({ position, text, type, size }) => {
   );
 };
 
-export const Cuboid: React.FC<IRackProps> = ({ position, text, size }) => {
+export const Cuboid: React.FC<IRackProps> = ({
+  position,
+  text,
+  size,
+  dimension,
+}) => {
   const rack = size || [0.01, 5, 2];
   const depth = rack[0];
-  const height = rack[1];
+  const initialHeight = rack[1];
   const width = rack[2];
+
+  const [height, setHeight] = useState(initialHeight);
 
   const [{ color1, color2, color3, opacity }, setColors] = useState({
     color1: "#8f8f8f",
@@ -184,28 +192,16 @@ export const Cuboid: React.FC<IRackProps> = ({ position, text, size }) => {
     opacity: 1,
   });
 
+  useEffect(() => {
+    if (dimension === "2d") {
+      setHeight(2);
+    } else {
+      setHeight(initialHeight); // Reset the height when dimension is not "2d"
+    }
+  }, [dimension, initialHeight]);
+
   return (
-    <mesh
-      position={position}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setColors({
-          color1: "#003cff",
-          color2: "#04a3ff",
-          color3: "#014db8",
-          opacity: 0.3,
-        });
-      }}
-      onPointerOut={(e) => {
-        e.stopPropagation();
-        setColors({
-          color1: "#8f8f8f",
-          color2: "#767676",
-          color3: "#c0c0c0",
-          opacity: 1,
-        });
-      }}
-    >
+    <mesh position={position}>
       {/* Left side */}
       <Box args={[0.01, height, depth]} position={[0, height / 2, 0]}>
         <meshBasicMaterial
@@ -248,8 +244,7 @@ export const Cuboid: React.FC<IRackProps> = ({ position, text, size }) => {
         />
       </Box>
 
-      {/* should add front and back box with transparent material */}
-      {/* front  */}
+      {/* Front & Back */}
       <Box args={[width, height, depth]} position={[width / 2, height / 2, 0]}>
         <meshBasicMaterial
           attach="material"

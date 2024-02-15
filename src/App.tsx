@@ -111,6 +111,61 @@ const App: React.FC = () => {
     // return () => clearInterval(interval);
   }, []);
 
+  const changeCamera = async () => {
+    if (!camera.current) return;
+
+    if (ortho) {
+      set((p) => !p);
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true);
+        }, 600);
+      });
+      new TWEEN.Tween(camera.current?.position)
+        .to(
+          {
+            x: 5,
+            y: 25,
+            z: 50,
+          },
+          1000
+        )
+        .easing(TWEEN.Easing.Cubic.Out)
+        .start();
+
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true);
+        }, 600);
+      });
+    } else {
+      new TWEEN.Tween(camera.current?.position)
+        .to(
+          {
+            x: 0,
+            y: 60,
+            z: 0,
+          },
+          1000
+        )
+        .easing(TWEEN.Easing.Cubic.Out)
+        .start();
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true);
+        }, 600);
+      });
+      set((p) => !p);
+    }
+
+    // camera.current?.position.set(0, Math.PI / 2, 0);
+    // camera.current?.zoom=(14);
+    // if (ortho) {
+    // } else {
+    //   camera.current?.position.set(5, 25, 50);
+    // }
+  };
+
   return (
     <div
       style={{
@@ -118,9 +173,7 @@ const App: React.FC = () => {
         width: "100vw",
       }}
     >
-      <button onClick={() => set((p) => !p)}>
-        Switch To {ortho ? "3D" : "2D"}
-      </button>
+      <button onClick={changeCamera}>Switch To {ortho ? "3D" : "2D"}</button>
       <Suspense fallback={<h1>Loading</h1>}>
         <Canvas>
           <PerspectiveCamera
@@ -131,6 +184,12 @@ const App: React.FC = () => {
           <OrthographicCamera
             ref={orthogonalRef}
             makeDefault={ortho}
+            // left={-200} // Adjust left boundary of view frustum
+            // right={200} // Adjust right boundary of view frustum
+            // top={200} // Adjust top boundary of view frustum
+            // bottom={-200} // Adjust bottom boundary of view frustum
+            // near={0.1} // Adjust near plane
+            // far={10000} // Adjust far plane
             position={[0, Math.PI / 2, 0]}
             zoom={14}
           />
@@ -185,13 +244,33 @@ const App: React.FC = () => {
 
             <group position={[-20, 0, 0]}>
               {[...new Array(16)].map((_, index) => (
-                <Rack
-                  key={index}
-                  position={[index * 2, 0, 0]}
-                  text={`A${alphabets[index]}`}
-                  type="server"
-                />
+                <group key={index} position={[index * 2, 0, 0]}>
+                  <Rack
+                    position={[0, 0, 0]}
+                    text={`A${alphabets[index]}`}
+                    type="server"
+                  />
+                  {[
+                    ...new Array(parseInt((Math.random() * 10).toString())),
+                  ].map((_, ind) => (
+                    <Switch
+                      key={ind}
+                      position={[
+                        1,
+                        parseInt((Math.random() * 10).toString()) * 0.3,
+                        -1,
+                      ]}
+                      size={[0.01, 0.2, 1.8]}
+                    />
+                  ))}
+                </group>
               ))}
+              {/* {[...new Array(16)].map((_, index) => (
+                <Switch
+                  position={[1, index * 0.3, -1]}
+                  size={[0.01, 0.2, 1.8]}
+                />
+              ))} */}
             </group>
 
             <group position={[-20, 0, 8]}>
@@ -205,11 +284,11 @@ const App: React.FC = () => {
               ))}
             </group>
 
-            <Switch position={[1, 2.3, -1]} size={[0.01, 0.2, 1.8]} />
+            {/* <Switch position={[1, 2.3, -1]} size={[0.01, 0.2, 1.8]} />
             <Switch position={[1, 2.6, -1]} size={[0.01, 0.2, 1.8]} />
             <Switch position={[1, 2.9, -1]} size={[0.01, 0.2, 1.8]} />
             <Switch position={[1, 4, -1]} size={[0.01, 0.2, 1.8]} />
-            <Switch position={[1, 3.7, -1]} size={[0.01, 0.2, 1.8]} />
+            <Switch position={[1, 3.7, -1]} size={[0.01, 0.2, 1.8]} /> */}
 
             {/* acs */}
             <group position={[-16, 0, 16]}>
@@ -244,6 +323,7 @@ const App: React.FC = () => {
                   text={`AC ${index + 3 + 2 + 1}`}
                   type="server"
                   size={[2, 6, 9]}
+                  dimension={ortho ? "2d" : "3d"}
                 />
               ))}
             </group>
@@ -257,6 +337,7 @@ const App: React.FC = () => {
                   text={`UPS-${alphabets[index]}`}
                   type="server"
                   size={[2, 5, 3]}
+                  dimension={ortho ? "2d" : "3d"}
                 />
               ))}
             </group>
