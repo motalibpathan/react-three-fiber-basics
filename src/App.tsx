@@ -170,7 +170,7 @@ const App: React.FC = () => {
             maxPolarAngle={Math.PI / 2}
           />
           <ambientLight intensity={1} />
-          <gridHelper args={[50, 50, "black"]} />
+          <gridHelper args={[100, 100, "black"]} />
           <axesHelper args={[5]} />
 
           <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
