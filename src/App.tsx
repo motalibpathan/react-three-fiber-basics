@@ -1,20 +1,17 @@
 import { OrbitControls, PerspectiveCamera, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import TWEEN from "@tweenjs/tween.js";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useRef } from "react";
 import {
   PerspectiveCamera as PerspectiveCameraType,
   TextureLoader,
 } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
-import { GLTFLoader } from "three/examples/jsm/Addons.js";
 import "./App.css";
 
 import * as THREE from "three";
-import { Cuboid, Rack } from "./Rack";
-import { Switch } from "./components/Switch";
 
-const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+// const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 interface ICube {
   position: [number, number, number];
@@ -58,90 +55,91 @@ const App: React.FC = () => {
   const camera = useRef<PerspectiveCameraType | null>(null!);
   const controls = useRef<OrbitControlsImpl | null>(null!);
 
-  const [dimension, setDimension] = useState<"2d" | "3d">("3d");
-  const [isolate, setIsolate] = useState(false);
+  // const [dimension, setDimension] = useState<"2d" | "3d">("3d");
+  // const [isolate, setIsolate] = useState(false);
   const groupRef = useRef<THREE.Group>(null);
-  const changeDimension = () => {
-    setDimension((p) => {
-      setIsolate(p === "2d" ? false : true);
-      return p === "2d" ? "3d" : "2d";
-    });
-  };
+  // const changeDimension = () => {
+  //   setDimension((p) => {
+  //     setIsolate(p === "2d" ? false : true);
+  //     return p === "2d" ? "3d" : "2d";
+  //   });
+  // };
 
-  useEffect(() => {
-    if (groupRef.current === null) return;
+  // useEffect(() => {
+  //   if (groupRef.current === null) return;
 
-    if (isolate) {
-      new TWEEN.Tween(groupRef.current?.scale)
-        .to({ x: 1, y: 0.01, z: 1 }, 1000)
-        .start();
-    } else {
-      new TWEEN.Tween(groupRef.current?.scale)
-        .to({ x: 1, y: 1, z: 1 }, 1000)
-        .start();
-    }
-  }, [isolate]);
+  //   if (isolate) {
+  //     new TWEEN.Tween(groupRef.current?.scale)
+  //       .to({ x: 1, y: 0.01, z: 1 }, 1000)
+  //       .start();
+  //   } else {
+  //     new TWEEN.Tween(groupRef.current?.scale)
+  //       .to({ x: 1, y: 1, z: 1 }, 1000)
+  //       .start();
+  //   }
+  // }, [isolate]);
 
-  useEffect(() => {
-    const switchBetweenDimension = async () => {
-      if (camera.current === null) return;
-      if (controls.current === null) return;
+  // useEffect(() => {
+  //   const switchBetweenDimension = async () => {
+  //     if (camera.current === null) return;
+  //     if (controls.current === null) return;
 
-      new TWEEN.Tween(controls.current!.target)
-        .to(
-          {
-            x: 0,
-            y: 1,
-            z: 0,
-          },
-          1000
-        )
-        .easing(TWEEN.Easing.Cubic.Out)
-        .start();
+  //     new TWEEN.Tween(controls.current!.target)
+  //       .to(
+  //         {
+  //           x: 0,
+  //           y: 1,
+  //           z: 0,
+  //         },
+  //         1000
+  //       )
+  //       .easing(TWEEN.Easing.Cubic.Out)
+  //       .start();
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+  //     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      if (dimension === "2d") {
-        new TWEEN.Tween(camera.current?.position)
-          .to(
-            {
-              x: 0,
-              y: 60,
-              z: 0,
-            },
-            1000
-          )
-          .easing(TWEEN.Easing.Cubic.Out)
-          .start();
-      } else {
-        new TWEEN.Tween(camera.current?.position)
-          .to(
-            {
-              x: 5,
-              y: 25,
-              z: 50,
-            },
-            1000
-          )
-          .easing(TWEEN.Easing.Cubic.Out)
-          .start();
-      }
-    };
+  //     if (dimension === "2d") {
+  //       new TWEEN.Tween(camera.current?.position)
+  //         .to(
+  //           {
+  //             x: 0,
+  //             y: 60,
+  //             z: 0,
+  //           },
+  //           1000
+  //         )
+  //         .easing(TWEEN.Easing.Cubic.Out)
+  //         .start();
+  //     } else {
+  //       new TWEEN.Tween(camera.current?.position)
+  //         .to(
+  //           {
+  //             x: 5,
+  //             y: 25,
+  //             z: 50,
+  //           },
+  //           1000
+  //         )
+  //         .easing(TWEEN.Easing.Cubic.Out)
+  //         .start();
+  //     }
+  //   };
 
-    switchBetweenDimension();
-  }, [dimension]);
+  //   switchBetweenDimension();
+  // }, [dimension]);
 
   return (
     <div
       style={{
         height: "100vh",
         width: "100vw",
+        // backgroundColor: "black",
       }}
     >
-      <button onClick={changeDimension}>
+      {/* <button onClick={changeDimension}>
         Change to {dimension === "2d" ? "3d" : "2d"}
       </button>
-      <button onClick={() => setIsolate((p) => !p)}>Isolate</button>
+      <button onClick={() => setIsolate((p) => !p)}>Isolate</button> */}
       <Suspense fallback={<h1>Loading</h1>}>
         <Canvas>
           <PerspectiveCamera
@@ -169,11 +167,13 @@ const App: React.FC = () => {
             target={[0, 1, 0]}
             maxPolarAngle={Math.PI / 2}
           />
-          <ambientLight intensity={1} />
-          <gridHelper args={[100, 100, "black"]} />
+
+          <ambientLight intensity={4} />
+
+          {/* <gridHelper args={[100, 100, "black"]} /> */}
           <axesHelper args={[5]} />
 
-          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+          {/* <spotLightHelper /> */}
 
           <group
             onDoubleClick={({ point }) => {
@@ -192,7 +192,7 @@ const App: React.FC = () => {
             ref={groupRef}
           >
             <group position={[-20, 0, 0]}>
-              {[...new Array(16)].map((_, index) => (
+              {/* {[...new Array(16)].map((_, index) => (
                 <group key={index} position={[index * 2, 0, 0]}>
                   <Rack
                     position={[0, 0, 0]}
@@ -207,7 +207,7 @@ const App: React.FC = () => {
                     />
                   ))}
                 </group>
-              ))}
+              ))} */}
               {/* {[...new Array(16)].map((_, index) => (
                 <Switch
                   position={[1, index * 0.3, -1]}
@@ -216,7 +216,7 @@ const App: React.FC = () => {
               ))} */}
             </group>
 
-            <group position={[-20, 0, 8]}>
+            {/* <group position={[-20, 0, 8]}>
               {[...new Array(14)].map((_, index) => (
                 <Rack
                   key={index}
@@ -225,10 +225,9 @@ const App: React.FC = () => {
                   type="server"
                 />
               ))}
-            </group>
+            </group> */}
 
-            {/* acs */}
-            <group position={[-16, 0, 16]}>
+            {/* <group position={[-16, 0, 16]}>
               {[...new Array(3)].map((_, index) => (
                 <Cuboid
                   key={index}
@@ -238,9 +237,9 @@ const App: React.FC = () => {
                   size={[2, 6, 9]}
                 />
               ))}
-            </group>
+            </group> */}
 
-            <group position={[-24, 0, 10]} rotation={[0, Math.PI / 2, 0]}>
+            {/* <group position={[-24, 0, 10]} rotation={[0, Math.PI / 2, 0]}>
               {[...new Array(2)].map((_, index) => (
                 <Cuboid
                   key={index}
@@ -250,9 +249,9 @@ const App: React.FC = () => {
                   size={[2, 6, 9]}
                 />
               ))}
-            </group>
+            </group> */}
 
-            <group position={[24, 0, 10]} rotation={[0, Math.PI / 2, 0]}>
+            {/* <group position={[24, 0, 10]} rotation={[0, Math.PI / 2, 0]}>
               {[...new Array(2)].map((_, index) => (
                 <Cuboid
                   key={index}
@@ -263,10 +262,10 @@ const App: React.FC = () => {
                   // dimension={false ? "2d" : "3d"}
                 />
               ))}
-            </group>
+            </group> */}
 
             {/* ups */}
-            <group position={[-16, 0, 24]}>
+            {/* <group position={[-16, 0, 24]}>
               {[...new Array(3)].map((_, index) => (
                 <Cuboid
                   key={index}
@@ -276,10 +275,10 @@ const App: React.FC = () => {
                   size={[2, 5, 3]}
                 />
               ))}
-            </group>
+            </group> */}
 
             {/* ups */}
-            <group position={[10, 0, 24]}>
+            {/* <group position={[10, 0, 24]}>
               {[...new Array(3)].map((_, index) => (
                 <Cuboid
                   key={index}
@@ -289,9 +288,7 @@ const App: React.FC = () => {
                   size={[2, 5, 3]}
                 />
               ))}
-            </group>
-
-            {/* <Model /> */}
+            </group> */}
           </group>
 
           {/* <Line
@@ -309,8 +306,6 @@ const App: React.FC = () => {
           /> */}
           <Tween />
           {/* <CircularDollyAnimation camera={camera} /> */}
-
-          <Light />
         </Canvas>
       </Suspense>
     </div>
@@ -318,81 +313,6 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-const Light = () => {
-  // const pointLight = useRef();
-
-  // useHelper(spotLight, SpotLightHelper, "teal");
-  // useHelper(pointLight, PointLightHelper, 0.5, "hotpink");
-
-  return (
-    <>
-      <pointLight
-        // ref={pointLight}
-        color="blue"
-        position={[1, 3, -0.5]}
-        intensity={5}
-      />
-    </>
-  );
-};
-
-export const Model = () => {
-  const modelRef = useRef();
-  const gltf = useLoader(GLTFLoader, "/diva_24_32.glb");
-  // const [defaultMaterial, setDefaultMaterial] = useState(null);
-
-  const rotationInDegrees = [0, -90, 0];
-  const rotationInRadians = rotationInDegrees.map(
-    (degree) => (degree * Math.PI) / 180
-  );
-
-  // const handlePointerOver = () => {
-  //   if (modelRef.current) {
-  //     modelRef.current.traverse((child) => {
-  //       if (child.isMesh) {
-  //         // Store the default material before changing
-  //         if (!defaultMaterial) {
-  //           setDefaultMaterial(child.material.clone());
-  //         }
-
-  //         // Example: Change color and opacity on hover
-  //         child.material.color.set(0xff0000);
-  //         child.material.opacity = 0.7;
-  //         child.material.transparent = true;
-  //       }
-  //     });
-  //   }
-  // };
-
-  // const handlePointerOut = () => {
-  //   if (modelRef.current && defaultMaterial) {
-  //     // Restore the default material
-  //     modelRef.current.traverse((child) => {
-  //       if (child.isMesh) {
-  //         child.material.copy(defaultMaterial);
-  //       }
-  //     });
-
-  //     // Reset the default material
-  //     setDefaultMaterial(null);
-  //   }
-  // };
-
-  return (
-    <group
-      position={[10, 0, 0]}
-      // onPointerOver={handlePointerOver}
-      // onPointerOut={handlePointerOut}
-    >
-      <primitive
-        ref={modelRef}
-        object={gltf.scene}
-        rotation={rotationInRadians}
-      />
-    </group>
-  );
-};
 
 // useGLTF.preload("/diva_24_32.glb");
 
